@@ -17,7 +17,7 @@ int distanceFromCam = 100;
 float horizontalOffset;
 float K1 = 40;
 
-float incrementSpeed = 0.6;
+float incrementSpeed = 1;
 
 float x, y, z;
 float ooz;
@@ -44,7 +44,7 @@ void calculateForSurface(float cubeX, float cubeY, float cubeZ, int ch) {
 	y = calculateY(cubeX, cubeY, cubeZ);
 	z = calculateZ(cubeX, cubeY, cubeZ) + distanceFromCam;
 
-	ooz = 1 / z;
+	ooz = 1.0f / z;
 
 	xp = static_cast<int>(width / 2 + horizontalOffset + K1 * ooz * x * 2);
 	yp = static_cast<int>(height / 2 + K1 * ooz * y);
@@ -60,7 +60,18 @@ void calculateForSurface(float cubeX, float cubeY, float cubeZ, int ch) {
 
 int main() {
 	cout << "\x1b[2J";
+	auto lastTime = chrono::high_resolution_clock::now();
+
 	while (true) {
+		auto currentTime = chrono::high_resolution_clock::now();
+		float deltaTime = chrono::duration<float, milli>(currentTime - lastTime).count();
+		lastTime = currentTime;
+
+		int rotationSpeed = 1;
+		A += rotationSpeed * deltaTime;
+		B += rotationSpeed * deltaTime;
+		C += rotationSpeed * deltaTime;
+
 		memset(buffer, backgroundASCIICode, width * height);
 		memset(zBuffer, 0, width * height * 4);
 		
@@ -114,7 +125,7 @@ int main() {
 		A += 0.5;
 		B += 0.5;
 		C += 0.1;
-		std::this_thread::sleep_for(std::chrono::milliseconds(8000 * 2));
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}
 	return 0;
 }
